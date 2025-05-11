@@ -1,20 +1,17 @@
 #asyncronic process for more optimized performance when dealing with multiple forms
 from playwright.async_api import async_playwright
 from playwright.async_api import Page
-from typing import List, Dict
 import asyncio
+import pandas as pd
+from typing import List, Dict
 
-data = {
-    "First Name": "Daniel",
-    "Last Name": "Jelacik",
-    "Company Name": "Solutions Oy",
-    "Role in Company": "Developer",
-    "Address": "Niittykatu",
-    "Email": "daniel@jelacik.com",
-    "Phone Number": "0503003199"
-}
+def excel_to_dict_list(filename: str) -> List[Dict]:
+    dataframe = pd.read_excel(filename)
+    #orient="records" to use column names as keys
+    return dataframe.to_dict(orient="records")
 
-async def fill_page(page: Page) -> None:
+
+async def fill_page(page: Page, person: Dict) -> None:
     #divs[] = save all divs which contain label
     divs = await page.locator("form div:has(label)").all()
     for div in divs:
@@ -27,11 +24,12 @@ async def fill_page(page: Page) -> None:
             continue
 
         #.text_content() returns what user sees, e.g. "First Name"
-        label_text = await label.text_content()
+        label_text = (await label.text_content())
+        #label_text = (await label.text_content()).strip()
 
         #if label == {key:}, fill with {:value}
-        if label_text in data:
-            await input.fill(data[label_text])
+        if label_text in person:
+            await input.fill(str(person[label_text]))
         else:
             print(f"Label doesn't match: '{label_text}'")
 
@@ -47,12 +45,17 @@ async def main() -> None:
         await page.goto("https://www.rpachallenge.com/")
         await page.get_by_role("button", name="Start").click()
 
-        for round in range(10):
-            await fill_page(page)
+        data = excel_to_dict_list("challenge.xlsx")
+        for person in data:
+            #Remove any extra spaces in Excelf headers
+            person_cleaned = {key.strip(): value for key, value in person.items()}
+            
+            await fill_page(page, person_cleaned)
             await page.get_by_role("button", name="Submit").click()
+            #await page.wait_for_timeout(1000)
             #wait for next form to load for 500 milliseconds
-            await page.wait_for_timeout(500)
 
+        input()
         #close tab
         await context.close()
         #clear cookies etc.
