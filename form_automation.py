@@ -1,0 +1,63 @@
+#asyncronic process for more optimized performance when dealing with multiple forms
+from playwright.async_api import async_playwright
+from playwright.async_api import Page
+from typing import List, Dict
+import asyncio
+
+data = {
+    "First Name": "Daniel",
+    "Last Name": "Jelacik",
+    "Company Name": "Solutions Oy",
+    "Role in Company": "Developer",
+    "Address": "Niittykatu",
+    "Email": "daniel@jelacik.com",
+    "Phone Number": "0503003199"
+}
+
+async def fill_page(page: Page) -> None:
+    #divs[] = save all divs which contain label
+    divs = await page.locator("form div:has(label)").all()
+    for div in divs:
+        #.first for selecting first labels/inputs if div has multiple
+        label = div.locator("label").first
+        input = div.locator("input").first
+
+        #skip divs with no label nor input
+        if await label.count() == 0 or await input.count() == 0:
+            continue
+
+        #.text_content() returns what user sees, e.g. "First Name"
+        label_text = await label.text_content()
+
+        #if label == {key:}, fill with {:value}
+        if label_text in data:
+            await input.fill(data[label_text])
+        else:
+            print(f"Label doesn't match: '{label_text}'")
+
+
+
+async def main() -> None:
+    async with async_playwright() as playwright:
+        #headless=False to see the rpa window for debugging
+        browser = await playwright.chromium.launch(headless=False)
+        context = await browser.new_context()
+        page = await context.new_page()
+
+        await page.goto("https://www.rpachallenge.com/")
+        await page.get_by_role("button", name="Start").click()
+
+        for round in range(10):
+            await fill_page(page)
+            await page.get_by_role("button", name="Submit").click()
+            #wait for next form to load for 500 milliseconds
+            await page.wait_for_timeout(500)
+
+        #close tab
+        await context.close()
+        #clear cookies etc.
+        await browser.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
