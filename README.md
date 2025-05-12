@@ -10,7 +10,7 @@ The task was to automate a form that changes input field order over 10 rounds. I
 
 Here’s a quick look at how it works:
 
-![RPA Challenge Demo](./assets/rpa-automation.gif)
+![RPA Challenge Demo](./assets/rpa-challenge.gif)
 
 ---
 
