@@ -43,10 +43,11 @@ async def run_automation(data: List[Dict[str, str]], args: Namespace) -> None:
                 await page.wait_for_timeout(300)
 
         end = time.time()
-
         if args.fast:
             print(f"\nPython timer: {int((end - start)*1000)} ms\n")
-        
+        elif not args.headless:
+            await page.wait_for_timeout(3000)
+            
         result_text = await page.locator("div.message2").text_content()
         print(result_text)
 
