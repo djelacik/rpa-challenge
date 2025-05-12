@@ -136,6 +136,8 @@ python main.py --fast
 - **Modular structure**  
    I kept everything modular: loading data, filling forms and parsing CLI args are all in their own files, so it’s easy to understand or extend later.
 
+---
+
 ## Final thoughts
 
 I really enjoyed building this. It felt like a small *Hack The Box*-style puzzle. I couldn't rely on the same approach I've used in similar projects before.
