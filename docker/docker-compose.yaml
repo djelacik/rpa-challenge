@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  rpa:
+    build: 
+      context: ..                             #build to root project 
+      dockerfile: docker/Dockerfile           #use this file
+    container_name: rpa-challenge             #container name
+    volumes:
+      - ../data:/app/data                     #mount data dir to container
+    command: ["python", "main.py", "--fast"]  #comamnds for running
