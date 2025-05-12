@@ -38,6 +38,9 @@ async def run_automation(data: List[Dict[str, str]], args: Namespace) -> None:
             person_cleaned = {key.strip(): value for key, value in person.items()}
             await fill_page(page, person_cleaned)
             await page.get_by_role("button", name="Submit").click()
+            #to ensure page is stable
+            if not args.fast:
+                await page.wait_for_timeout(300)
 
         end = time.time()
 
