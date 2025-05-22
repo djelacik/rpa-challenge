@@ -1,6 +1,6 @@
 # RPA Challenge Automation with Python & Playwright
 
-This repo includes my solution to the [RPA Challenge](https://rpachallenge.com/) as part of my application for the Python Automation Developer role at **Digital Workforce**.
+This repo includes my solution to the [RPA Challenge](https://rpachallenge.com/).
 
 The task was to automate a form that changes input field order over 10 rounds. I wanted to make the solution reliable, easy to read, and simple to run, whether locally or in Docker.
 
